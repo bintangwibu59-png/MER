@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MangaVerse • Ultimate Manga Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #0f0f1a 30%, #1a1a2e 70%, #0a0a0a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ff4757, #ff6b81); border-radius: 10px; }
+
+        /* Container */
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            padding: 0 20px;
+        }
+        .header.scrolled {
+            background: rgba(10, 10, 20, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 71, 87, 0.3);
+        }
+        .header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .logo-icon {
+            font-size: 32px;
+            animation: spin 4s ease-in-out infinite;
+        }
+        @keyframes spin {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff4757, #ff8c00, #ff4757);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmer 2s ease infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        .nav {
+            display: flex;
+            gap: 32px;
+        }
+        .nav a {
+            color: #e0e0e0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .nav a:hover {
+            color: #ff4757;
+        }
+        .nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #ff4757;
+            transition: width 0.3s;
+        }
+        .nav a:hover::after {
+            width: 100%;
+        }
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 40px;
+            padding: 10px 20px 10px 45px;
+            color: white;
+            font-size: 14px;
+            width: 220px;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            width: 300px;
+            outline: none;
+            border-color: #ff4757;
+            background: rgba(255,255,255,0.12);
+        }
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 65vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            margin-top: 70px;
+            background: radial-gradient(circle at center, rgba(255,71,87,0.15) 0%, transparent 70%);
+        }
+        .hero-content {
+            z-index: 2;
+        }
+        .hero-icon {
+            font-size: 90px;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(255,71,87,0.5));
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .hero-title {
+            font-size: 64px;
+            font-weight: 800;
+            margin: 20px 0;
+        }
+        .hero-title span {
+            background: linear-gradient(135deg, #ff4757, #ff8c00, #ff6b81);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero-subtitle {
+            font-size: 18px;
+            color: #aaa;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Section */
+        .section {
+            margin: 50px 0;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff4757, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .view-all {
+            color: #ff4757;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Grid */
+        .manga-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 24px;
+        }
+
+        /* Card */
+        .manga-card {
+            background: rgba(20, 20, 40, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+        }
+        .manga-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: #ff4757;
+            box-shadow: 0 20px 40px rgba(255, 71, 87, 0.2);
+        }
+        .card-cover {
+            position: relative;
+            aspect-ratio: 2/3;
+            overflow: hidden;
+        }
+        .card-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        .manga-card:hover .card-cover img {
+            transform: scale(1.08);
+        }
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 20px 10px 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .manga-card:hover .card-overlay {
+            opacity: 1;
+        }
+        .card-info {
+            padding: 12px;
+        }
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .card-badge {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .badge {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.6);
+        }
+        .badge.ongoing { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); }
+        .badge.completed { background: rgba(52, 152, 219, 0.2); color: #3498db; border: 1px solid rgba(52,152,219,0.3); }
+        .badge.hiatus { background: rgba(241, 196, 15, 0.2); color: #f1c40f; border: 1px solid rgba(241,196,15,0.3); }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 16px;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .skeleton-cover {
+            aspect-ratio: 2/3;
+            border-radius: 12px;
+        }
+        .skeleton-title {
+            height: 14px;
+            margin: 10px;
+            border-radius: 8px;
+        }
+
+        /* Modal Detail */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.97);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
+            border-radius: 24px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,71,87,0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal-header h2 {
+            font-size: 22px;
+            background: linear-gradient(135deg, #ff4757, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .modal-close {
+            font-size: 32px;
+            cursor: pointer;
+            color: #ff4757;
+            transition: transform 0.3s;
+        }
+        .modal-close:hover { transform: rotate(90deg); }
+        .modal-body {
+            padding: 25px;
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .modal-cover {
+            width: 200px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .modal-info {
+            flex: 1;
+        }
+        .modal-desc {
+            color: #aaa;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+        .chapter-list {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+        .chapter-list h3 {
+            margin-bottom: 15px;
+            color: #ff4757;
+        }
+        .chapter-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+        }
+        .chapter-item:hover {
+            background: rgba(255,71,87,0.1);
+            padding-left: 25px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 60px;
+            color: #555;
+            font-size: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav { display: none; }
+            .hero-title { font-size: 36px; }
+            .manga-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+            .search-box input { width: 150px; }
+            .search-box input:focus { width: 180px; }
+            .modal-body { flex-direction: column; align-items: center; text-align: center; }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #ff4757;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .loading-text {
+            text-align: center;
+            padding: 40px;
+            color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header" id="header">
+    <div class="header-inner">
+        <div class="logo" onclick="loadHome()">
+            <span class="logo-icon">📚</span>
+            <span class="logo-text">MangaVerse</span>
+        </div>
+        <div class="nav">
+            <a href="#" onclick="loadHome(); return false;">🏠 Home</a>
+            <a href="#" onclick="loadPopular(); return false;">🔥 Popular</a>
+            <a href="#" onclick="loadLatest(); return false;">🆕 Latest</a>
+            <a href="#" onclick="loadRandom(); return false;">🎲 Random</a>
+        </div>
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Cari manga..." onkeypress="if(event.key==='Enter') searchManga()">
+        </div>
+    </div>
+</div>
+
+<main>
+    <div class="container" id="mainContent">
+        <div class="hero">
+            <div class="hero-content">
+                <div class="hero-icon">📖</div>
+                <h1 class="hero-title">Manga<span>Verse</span></h1>
+                <p class="hero-subtitle">Koleksi manga terlengkap dari MangaDex API. Baca gratis, kapan saja, di mana saja!</p>
+            </div>
+        </div>
+        <div id="dynamicContent"></div>
+    </div>
+</main>
+
+<div class="footer">
+    <p>MangaVerse • Powered by MangaDex API</p>
+    <p style="margin-top: 8px;">✨ Unlimited Reading • No Boundaries • No Limits ✨</p>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle">Loading...</h2>
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <img id="modalCover" class="modal-cover" src="" alt="">
+            <div class="modal-info">
+                <p id="modalDesc" class="modal-desc">Loading description...</p>
+                <div class="chapter-list">
+                    <h3>📑 Daftar Chapter</h3>
+                    <div id="chapterList">Loading chapters...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // MANGA LIBRARY WITH MANGADEX API
+    // API KEY: eqD3fYI5QegxdxwWWXNZLgiMUne95tc7
+    // ============================================
+    
+    const API_BASE = 'https://api.mangadex.org';
+
+    // Helper: Get Cover URL
+    function getCoverUrl(mangaId, coverFileName, size = '256') {
+        if (!coverFileName) return 'https://placehold.co/256x384/1a1a2e/ff4757?text=No+Cover';
+        return `https://uploads.mangadex.org/covers/${mangaId}/${coverFileName}.${size}.jpg`;
+    }
+
+    // Helper: Escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Helper: Show Toast
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.background = isError ? '#c0392b' : '#ff4757';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Fetch Manga List
+    async function fetchManga(params = {}) {
+        const defaultParams = {
+            limit: 24,
+            offset: 0,
+            includes: ['cover_art', 'author', 'artist', 'tag'],
+            contentRating: ['safe', 'suggestive'],
+            order: { followedCount: 'desc' }
+        };
+        const finalParams = { ...defaultParams, ...params };
+        
+        try {
+            const url = new URL(`${API_BASE}/manga`);
+            Object.keys(finalParams).forEach(key => {
+                if (finalParams[key] !== undefined) {
+                    if (Array.isArray(finalParams[key])) {
+                        finalParams[key].forEach(v => url.searchParams.append(key, v));
+                    } else if (typeof finalParams[key] === 'object') {
+                        url.searchParams.append(key, JSON.stringify(finalParams[key]));
+                    } else {
+                        url.searchParams.append(key, finalParams[key]);
+                    }
+                }
+            });
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.result === 'ok') return data.data || [];
+            return [];
+        } catch (error) {
+            console.error('Fetch error:', error);
+            showToast('Error fetching manga!', true);
+            return [];
+        }
+    }
+
+    // Get Manga by ID
+    async function getMangaById(id) {
+        try {
+            const response = await fetch(`${API_BASE}/manga/${id}?includes[]=cover_art&includes[]=author&includes[]=artist`);
+            const data = await response.json();
+            return data.data || null;
+        } catch (error) {
+            console.error('Error:', error);
+            return null;
+        }
+    }
+
+    // Get Chapters
+    async function getChapters(mangaId) {
+        try {
+            const response = await fetch(`${API_BASE}/manga/${mangaId}/feed?limit=100&translatedLanguage[]=en&translatedLanguage[]=id&order[chapter]=desc`);
+            const data = await response.json();
+            return data.data || [];
+        } catch (error) {
+            console.error('Error:', error);
+            return [];
+        }
+    }
+
+    // Render Manga Cards
+    function renderMangaCards(mangas) {
+        if (!mangas || mangas.length === 0) {
+            return '<div style="text-align:center;padding:60px;"><div style="font-size:64px;">🔍</div><h3>No manga found</h3><p style="color:#666;">Try different search keywords</p></div>';
+        }
+        
+        return `
+            <div class="manga-grid">
+                ${mangas.map(manga => {
+                    const coverRel = manga.relationships?.find(r => r.type === 'cover_art');
+                    const coverFileName = coverRel?.attributes?.fileName;
+                    const coverUrl = getCoverUrl(manga.id, coverFileName);
+                    const title = manga.attributes.title?.en || manga.attributes.title?.id || Object.values(manga.attributes.title || {})[0] || 'Unknown Title';
+                    const status = manga.attributes.status || 'ongoing';
+                    const year = manga.attributes.year || '';
+                    
+                    return `
+                        <div class="manga-card" onclick="openMangaDetail('${manga.id}')">
+                            <div class="card-cover">
+                                <img src="${coverUrl}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.src='https://placehold.co/256x384/1a1a2e/ff4757?text=${encodeURIComponent(title.substring(0,15))}'">
+                                <div class="card-overlay">
+                                    <span style="color:#ff4757; font-size:12px;">▶ Klik untuk detail</span>
+                                </div>
+                            </div>
+                            <div class="card-info">
+                                <div class="card-title">${escapeHtml(title)}</div>
+                                <div class="card-badge">
+                                    <span class="badge ${status}">${status === 'ongoing' ? '⏳ Ongoing' : status === 'completed' ? '✅ Completed' : '⏸ Hiatus'}</span>
+                                    ${year ? `<span class="badge">📅 ${year}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    // Render Skeleton
+    function renderSkeleton() {
+        return `
+            <div class="manga-grid">
+                ${Array(12).fill().map(() => `
+                    <div style="border-radius:16px; overflow:hidden;">
+                        <div class="skeleton skeleton-cover"></div>
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-title" style="width:60%"></div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    // Load Home Page
+    async function loadHome() {
+        const container = document.getElementById('dynamicContent');
+        container.innerHTML = `
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🔥 Most Popular</h2>
+                    <span class="view-all" onclick="loadPopular()">View all →</span>
+                </div>
+                <div id="popularGrid">${renderSkeleton()}</div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🆕 Latest Update</h2>
+                    <span class="view-all" onclick="loadLatest()">View all →</span>
+                </div>
+                <div id="latestGrid">${renderSkeleton()}</div>
+            </div>
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🎲 Random Picks</h2>
+                    <span class="view-all" onclick="loadRandom()">View all →</span>
+                </div>
+                <div id="randomGrid">${renderSkeleton()}</div>
+            </div>
+        `;
+        
+        const [popular, latest, random] = await Promise.all([
+            fetchManga({ order: { followedCount: 'desc' }, limit: 18 }),
+            fetchManga({ order: { createdAt: 'desc' }, limit: 18 }),
+            fetchManga({ limit: 12, offset: Math.floor(Math.random() * 800) })
+        ]);
+        
+        document.getElementById('popularGrid').innerHTML = renderMangaCards(popular);
+        document.getElementById('latestGrid').innerHTML = renderMangaCards(latest);
+        document.getElementById('randomGrid').innerHTML = renderMangaCards(random);
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Load Popular
+    async function loadPopular() {
+        const container = document.getElementById('dynamicContent');
+        container.innerHTML = `<div class="section"><div class="section-header"><h2 class="section-title">🔥 Most Popular</h2><span class="view-all" onclick="loadHome()">← Back to Home</span></div><div id="popularGrid">${renderSkeleton()}</div></div>`;
+        const data = await fetchManga({ order: { followedCount: 'desc' }, limit: 36 });
+        document.getElementById('popularGrid').innerHTML = renderMangaCards(data);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Load Latest
+    async function loadLatest() {
+        const container = document.getElementById('dynamicContent');
+        container.innerHTML = `<div class="section"><div class="section-header"><h2 class="section-title">🆕 Latest Update</h2><span class="view-all" onclick="loadHome()">← Back to Home</span></div><div id="latestGrid">${renderSkeleton()}</div></div>`;
+        const data = await fetchManga({ order: { createdAt: 'desc' }, limit: 36 });
+        document.getElementById('latestGrid').innerHTML = renderMangaCards(data);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Load Random
+    async function loadRandom() {
+        const container = document.getElementById('dynamicContent');
+        container.innerHTML = `<div class="section"><div class="section-header"><h2 class="section-title">🎲 Random Picks</h2><span class="view-all" onclick="loadHome()">← Back to Home</span></div><div id="randomGrid">${renderSkeleton()}</div></div>`;
+        const data = await fetchManga({ limit: 36, offset: Math.floor(Math.random() * 800) });
+        document.getElementById('randomGrid').innerHTML = renderMangaCards(data);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Search Manga
+    async function searchManga() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) {
+            showToast('Masukkan kata kunci pencarian!', true);
+            return;
+        }
+        
+        const container = document.getElementById('dynamicContent');
+        container.innerHTML = `<div class="section"><div class="section-header"><h2 class="section-title">🔍 Search: "${escapeHtml(query)}"</h2><span class="view-all" onclick="loadHome()">← Back to Home</span></div><div id="searchGrid">${renderSkeleton()}</div></div>`;
+        
+        const data = await fetchManga({ title: query, limit: 36 });
+        document.getElementById('searchGrid').innerHTML = renderMangaCards(data);
+        
+        if (data.length === 0) showToast('Tidak ada manga ditemukan!', true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Open Manga Detail Modal
+    async function openMangaDetail(mangaId) {
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalCover = document.getElementById('modalCover');
+        const modalDesc = document.getElementById('modalDesc');
+        const chapterListDiv = document.getElementById('chapterList');
+        
+        modal.classList.add('active');
+        modalTitle.innerText = 'Loading...';
+        modalDesc.innerText = 'Loading manga details...';
+        chapterListDiv.innerHTML = '<div class="loading-text">📖 Loading chapters...</div>';
+        
+        const [manga, chapters] = await Promise.all([
+            getMangaById(mangaId),
+            getChapters(mangaId)
+        ]);
+        
+        if (manga) {
+            const coverRel = manga.relationships?.find(r => r.type === 'cover_art');
+            const coverFileName = coverRel?.attributes?.fileName;
+            const coverUrl = getCoverUrl(manga.id, coverFileName, '512');
+            const title = manga.attributes.title?.en || manga.attributes.title?.id || Object.values(manga.attributes.title || {})[0] || 'Unknown';
+            const description = manga.attributes.description?.en || manga.attributes.description?.id || 'No description available.';
+            
+            modalTitle.innerText = title;
+            modalCover.src = coverUrl;
+            modalDesc.innerText = description.length > 800 ? description.substring(0, 800) + '...' : description;
+        }
+        
+        if (chapters && chapters.length > 0) {
+            chapterListDiv.innerHTML = chapters.slice(0, 50).map(ch => {
+                const chapterNum = ch.attributes.chapter || '?';
+                const chapterTitle = ch.attributes.title || `Chapter ${chapterNum}`;
+                return `
+                    <div class="chapter-item" onclick="window.open('https://mangadex.org/chapter/${ch.id}', '_blank')">
+                        <strong>📖 Chapter ${chapterNum}</strong> - ${escapeHtml(chapterTitle)}
+                        <span style="float:right; font-size:11px; color:#666;">➡ Baca</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            chapterListDiv.innerHTML = '<p style="color:#666; text-align:center;">No chapters available</p>';
+        }
+    }
+
+    // Close Modal
+    function closeModal() {
+        document.getElementById('modal').classList.remove('active');
+    }
+
+    // Header Scroll Effect
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('header');
+        if (window.scrollY > 50) header.classList.add('scrolled');
+        else header.classList.remove('scrolled');
+    });
+
+    // Close modal on escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // Initialize
+    loadHome();
+</script>
+
+</body>
+</html>
